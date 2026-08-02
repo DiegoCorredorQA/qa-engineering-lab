@@ -1,5 +1,7 @@
 package api.tests;
 
+import api.specifications.RequestSpecs;
+import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import io.restassured.RestAssured;
@@ -15,17 +17,18 @@ import static org.hamcrest.Matchers.greaterThan;
 import org.testng.Assert;
 
 public class GetPostTest {
+    private RequestSpecification requestSpec;
 
     @BeforeClass
     public void setUp() {
-        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+        requestSpec = RequestSpecs.jsonPlaceholderRequestSpec();
     }
 
     @Test
     public void shouldGetPostById() {
         Response response =
             given()
-                    .log().all()
+                    .spec(requestSpec)
                     .pathParam("postId", 1)
             .when()
                     .get("/posts/{postId}")
@@ -59,7 +62,7 @@ public class GetPostTest {
     @Test
     public void shouldReturnNotFoundForNonExistingPost() {
         given()
-                .log().all()
+                .spec(requestSpec)
                 .pathParam("postId", 9999)
                 .when()
                 .get("/posts/{postId}")
@@ -73,7 +76,7 @@ public class GetPostTest {
     @Test
     public void shouldGetPostsByUserId() {
         given()
-                .log().all()
+                .spec(requestSpec)
                 .queryParam("userId", 1)
                 .when()
                 .get("/posts")
@@ -88,7 +91,7 @@ public class GetPostTest {
     @Test
     public void shouldReturnEmptyListForNonExistingUserId() {
         given()
-                .log().all()
+                .spec(requestSpec)
                 .queryParam("userId", 9999)
                 .when()
                 .get("/posts")
@@ -102,7 +105,7 @@ public class GetPostTest {
     @Test
     public void shouldGetPostsForUserTwo() {
         given()
-                .log().all()
+                .spec(requestSpec)
                 .queryParam("userId", 2)
                 .when()
                 .get("/posts")

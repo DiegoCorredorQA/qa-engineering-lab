@@ -1,7 +1,9 @@
 package api.tests;
 
+import api.specifications.RequestSpecs;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -10,10 +12,11 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class CreatePostTest {
+    private RequestSpecification requestSpec;
 
     @BeforeClass
     public void setUp() {
-        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+        requestSpec = RequestSpecs.jsonPlaceholderRequestSpec();
     }
 
     @Test
@@ -27,9 +30,7 @@ public class CreatePostTest {
                 """;
 
         given()
-                .log().all()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
+                .spec(requestSpec)
                 .body(requestBody)
                 .when()
                 .post("/posts")

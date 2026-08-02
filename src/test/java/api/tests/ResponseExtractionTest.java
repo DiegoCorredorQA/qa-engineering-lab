@@ -1,7 +1,9 @@
 package api.tests;
 
+import api.specifications.RequestSpecs;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -11,18 +13,20 @@ import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 
 public class ResponseExtractionTest {
+    private RequestSpecification requestSpec;
 
     @BeforeClass
     public void setUp() {
-        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+        requestSpec = RequestSpecs.jsonPlaceholderRequestSpec();
     }
+
 
     @Test
     public void shouldExtractUserIdAndReuseItInAnotherRequest() {
 
         Response postResponse =
                 given()
-                        .log().all()
+                        .spec(requestSpec)
                         .when()
                         .get("/posts/{postId}", 1)
                         .then()
@@ -36,7 +40,7 @@ public class ResponseExtractionTest {
         System.out.println("Extracted userId: " + userId);
 
         given()
-                .log().all()
+                .spec(requestSpec)
                 .queryParam("userId", userId)
                 .when()
                 .get("/posts")

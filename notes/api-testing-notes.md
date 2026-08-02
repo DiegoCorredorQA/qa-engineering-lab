@@ -22,7 +22,7 @@ Notas personales del programa de formación en API Automation con Java, Rest Ass
 
 ---
 
-## 2026-08-02
+## 2026-08-01
 
 ### Tema
 
@@ -45,3 +45,61 @@ Response response =
                 .response();
 
 int postId = response.jsonPath().getInt("postId");
+```
+
+## 2026-08-02
+
+### Tema
+
+Centralización de la configuración común de las peticiones.
+
+### Concepto en mis palabras
+
+Se crea una clase `RequestSpecs` que construye y devuelve una
+`RequestSpecification`.
+
+Esta especificación contiene configuraciones compartidas por varias
+peticiones, como la URI base, el `Content-Type`, el header `Accept`
+y el logging.
+
+Esto evita duplicar configuración en cada test y facilita el mantenimiento.
+Los datos específicos de cada escenario, como path parameters o query
+parameters, deben permanecer en el test.
+
+### Ejemplo mínimo
+
+#### Crear la especificación
+
+```java
+public static RequestSpecification jsonPlaceholderRequestSpec() {
+    return new RequestSpecBuilder()
+            .setBaseUri("https://jsonplaceholder.typicode.com")
+            .setContentType(JSON)
+            .setAccept(JSON)
+            .log(LogDetail.ALL)
+            .build();
+}
+```
+#### Inicializarla en el test
+```java
+given()
+.spec(requestSpec)
+.when()
+.get("/posts/{postId}", postId)
+.then()
+.statusCode(200);
+```
+
+#### Aplicarla a una petición
+```java
+given()
+.spec(requestSpec)
+.when()
+.get("/posts/{postId}", postId)
+.then()
+.statusCode(200);
+```
+
+### Cierre del tema
+
+Pude reutilizar `RequestSpecs` en más de una clase y eliminar la configuración duplicada sin cambiar el comportamiento de las pruebas.

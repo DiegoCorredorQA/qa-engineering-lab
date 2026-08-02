@@ -1,7 +1,8 @@
 package api.tests;
 
-import io.restassured.RestAssured;
+import api.specifications.RequestSpecs;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -12,17 +13,18 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.emptyString;
 
 public class CommentPostChainTest {
+    private RequestSpecification requestSpec;
 
     @BeforeClass
     public void setUp() {
-        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+        requestSpec = RequestSpecs.jsonPlaceholderRequestSpec();
     }
 
     @Test
     public void shouldGetPostAssociatedWithComment() {
         Response commentResponse =
                 given()
-                        .log().all()
+                        .spec(requestSpec)
                         .when()
                         .get("/comments/{id}", 1)
                         .then()
@@ -38,7 +40,7 @@ public class CommentPostChainTest {
         System.out.println("Extracted postId: " + postId);
 
         given()
-                .log().all()
+                .spec(requestSpec)
                 .when()
                 .get("/posts/{postId}", postId)
                 .then()
