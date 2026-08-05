@@ -102,4 +102,66 @@ given()
 
 ### Cierre del tema
 
-Pude reutilizar `RequestSpecs` en más de una clase y eliminar la configuración duplicada sin cambiar el comportamiento de las pruebas.
+Pude reutilizar `RequestSpecs` en más de una clase y eliminar la configuración duplicada sin cambiar el comportamiento 
+de las pruebas.
+
+## 2026-08-05
+
+### Tema
+
+Centralización de la configuración común de las respuestas.
+
+### Concepto en mis palabras
+
+Se crea una clase `ResponseSpecs` que construye y devuelve una
+`RequestSpecBuilder`. No se genera una para todas las respuestas, sino por ejemplo unas para las exitosas (200) 
+
+Esta especificación contiene los specs comunes por ejemplo a los positive test, donde esperariamos un Content Type JSON,
+Status Code 200 y un nivel de login especifico.
+
+Evita duplicidad de código y facilita la mantenibilidad.
+
+### Ejemplo mínimo
+
+#### Crear la especificación
+
+```java
+public static RequestSpecification jsonPlaceholderRequestSpec() {
+    return new RequestSpecBuilder()
+            .setBaseUri("https://jsonplaceholder.typicode.com")
+            .setContentType(JSON)
+            .setAccept(JSON)
+            .log(LogDetail.ALL)
+            .build();
+}
+```
+#### Inicializarla en el test
+```java
+private ResponseSpecification successfulResponseSpec;
+
+@BeforeClass
+public void setUp() {
+    successfulResponseSpec = ResponseSpecs.successfulJsonResponseSpec();
+}
+```
+
+#### Aplicarla a una petición
+```java
+.then()
+.spec(successfulResponseSpec)
+```
+### Diferencia entre validaciones comunes y particulares
+
+Las validaciones comunes son expectativas compartidas por varios escenarios
+del mismo tipo, como status code, content type o headers.
+
+No todas las respuestas exitosas usan status 200. El código esperado depende
+del método y del contrato de la API, por ejemplo 200, 201 o 204.
+
+Las assertions particulares expresan el comportamiento específico del test,
+como validar que el `id` de un post coincide con el `postId` extraído de un
+comentario.
+
+Solo conviene reutilizar una validación cuando representa exactamente la misma
+regla en varios escenarios. No se debe abstraer únicamente para reducir líneas
+de código.

@@ -1,24 +1,27 @@
 package api.tests;
 
 import api.specifications.RequestSpecs;
+import api.specifications.ResponseSpecs;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.*;
 
 public class CommentPostChainTest {
     private RequestSpecification requestSpec;
+    private ResponseSpecification successfulResponseSpec;
 
     @BeforeClass
     public void setUp() {
         requestSpec = RequestSpecs.jsonPlaceholderRequestSpec();
+        successfulResponseSpec = ResponseSpecs.successfulJsonResponseSpec();
     }
+
+
 
     @Test
     public void shouldGetPostAssociatedWithComment() {
@@ -28,8 +31,7 @@ public class CommentPostChainTest {
                         .when()
                         .get("/comments/{id}", 1)
                         .then()
-                        .log().all()
-                        .statusCode(200)
+                        .spec(successfulResponseSpec)
                         .body("email", notNullValue())
                         .body("body", not(emptyString()))
                         .extract()
@@ -44,8 +46,7 @@ public class CommentPostChainTest {
                 .when()
                 .get("/posts/{postId}", postId)
                 .then()
-                .log().all()
-                .statusCode(200)
+                .spec(successfulResponseSpec)
                 .body("id", equalTo(postId))
                 .body("title", not(emptyString()));
     }
