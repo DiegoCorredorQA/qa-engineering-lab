@@ -1,7 +1,9 @@
 package api.tests;
 
 import api.specifications.RequestSpecs;
+import api.specifications.ResponseSpecs;
 import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import io.restassured.RestAssured;
@@ -18,10 +20,12 @@ import org.testng.Assert;
 
 public class GetPostTest {
     private RequestSpecification requestSpec;
+    private ResponseSpecification notFoundJsonResponseSpec;
 
     @BeforeClass
     public void setUp() {
         requestSpec = RequestSpecs.jsonPlaceholderRequestSpec();
+        notFoundJsonResponseSpec = ResponseSpecs.notFoundJsonResponseSpec();
     }
 
     @Test
@@ -64,12 +68,10 @@ public class GetPostTest {
         given()
                 .spec(requestSpec)
                 .pathParam("postId", 9999)
-                .when()
+        .when()
                 .get("/posts/{postId}")
-                .then()
-                .log().all()
-                .statusCode(404)
-                .contentType(ContentType.JSON)
+        .then()
+                .spec(notFoundJsonResponseSpec)
                 .body("$", anEmptyMap());
     }
 

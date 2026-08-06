@@ -1,5 +1,7 @@
 package api.specifications;
 
+import groovy.util.logging.Log;
+import io.restassured.builder.ResponseBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
@@ -10,7 +12,13 @@ public class ResponseSpecs {
         return new ResponseSpecBuilder()
                 .expectContentType(ContentType.JSON)
                 .expectStatusCode(200)
-                .log(LogDetail.ALL)
+                .build();
+    }
+
+    public static ResponseSpecification notFoundJsonResponseSpec() {
+        return new ResponseSpecBuilder()
+                .expectContentType(ContentType.JSON)
+                .expectStatusCode(404)
                 .build();
     }
 }
