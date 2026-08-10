@@ -126,12 +126,10 @@ Evita duplicidad de código y facilita la mantenibilidad.
 #### Crear la especificación
 
 ```java
-public static RequestSpecification jsonPlaceholderRequestSpec() {
-    return new RequestSpecBuilder()
-            .setBaseUri("https://jsonplaceholder.typicode.com")
-            .setContentType(JSON)
-            .setAccept(JSON)
-            .log(LogDetail.ALL)
+public static ResponseSpecification successfulJsonResponseSpec() {
+    return new ResponseSpecBuilder()
+            .expectContentType(ContentType.JSON)
+            .expectStatusCode(200)
             .build();
 }
 ```
@@ -165,3 +163,42 @@ comentario.
 Solo conviene reutilizar una validación cuando representa exactamente la misma
 regla en varios escenarios. No se debe abstraer únicamente para reducir líneas
 de código.
+
+### Cierre del tema
+
+Creé especificaciones de respuesta separadas para escenarios exitosos y negativos.
+
+Comprendí que una respuesta positiva no siempre usa status `200` y que cada especificación debe representar un contrato
+claro, sin aceptar varios resultados incompatibles.
+
+## 2026-08-10
+
+### Tema
+
+Serialización de objetos Java a JSON.
+
+### Concepto en mis palabras
+
+En lugar de construir el request body como un String JSON, puedo representar
+los datos mediante una clase Java.
+
+Rest Assured usa Jackson para serializar el objeto Java a JSON antes de
+enviarlo a la API.
+
+### Flujo
+
+PostRequest → Jackson → JSON → Rest Assured → API
+
+### Error o aprendizaje
+
+Rest Assured no incluye por sí solo un serializador JSON. Fue necesario
+agregar Jackson Databind al proyecto.
+
+Además, Jackson necesita poder descubrir las propiedades del objeto; en este
+caso lo hace mediante getters públicos.
+
+### Decisión de QA
+
+Los modelos de request deben representar solo los datos que enviamos.
+Un campo generado por el servidor, como `id`, no debe agregarse al
+`PostRequest`.

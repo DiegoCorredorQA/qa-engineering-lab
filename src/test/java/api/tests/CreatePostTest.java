@@ -1,9 +1,9 @@
 package api.tests;
 
 import api.specifications.RequestSpecs;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import api.models.PostRequest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -21,13 +21,7 @@ public class CreatePostTest {
 
     @Test
     public void shouldCreatePost() {
-        String requestBody = """
-                {
-                  "title": "Learning REST Assured",
-                  "body": "Creating a post using REST Assured",
-                  "userId": 1
-                }
-                """;
+        PostRequest requestBody = new PostRequest("Learning REST Assured", "Creating a post using REST Assured", 1);
 
         given()
                 .spec(requestSpec)
