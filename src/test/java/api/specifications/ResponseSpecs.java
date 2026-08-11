@@ -15,6 +15,13 @@ public class ResponseSpecs {
                 .build();
     }
 
+    public static ResponseSpecification createdfulJsonResponseSpec() {
+        return new ResponseSpecBuilder()
+                .expectContentType(ContentType.JSON)
+                .expectStatusCode(201)
+                .build();
+    }
+
     public static ResponseSpecification notFoundJsonResponseSpec() {
         return new ResponseSpecBuilder()
                 .expectContentType(ContentType.JSON)

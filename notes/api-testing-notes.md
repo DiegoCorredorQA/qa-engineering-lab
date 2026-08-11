@@ -202,3 +202,42 @@ caso lo hace mediante getters públicos.
 Los modelos de request deben representar solo los datos que enviamos.
 Un campo generado por el servidor, como `id`, no debe agregarse al
 `PostRequest`.
+
+## 2026-08-11
+
+### Tema
+
+Deserialización de JSON a objetos Java.
+
+### Concepto en mis palabras
+
+Conviene deserializar una respuesta a un objeto Java cuando la respuesta es
+compleja, tiene varias propiedades que necesito validar o cuando quiero reutilizar
+sus datos posteriormente.
+
+Se crea un modelo Java que representa la respuesta esperada y Rest Assured,
+usando Jackson, convierte el JSON recibido en una instancia de ese modelo.
+
+Después se pueden realizar assertions con TestNG sobre las propiedades del objeto.
+
+### Flujo
+
+API Response JSON
+→ Jackson
+→ PostResponse
+→ TestNG assertions
+
+### Ejemplo mínimo
+
+```java
+PostResponse postResponse =
+        given()
+                .spec(requestSpec)
+        .when()
+                .post("/posts")
+        .then()
+                .extract()
+                .as(PostResponse.class);
+
+assertNotNull(postResponse.getId());
+```
